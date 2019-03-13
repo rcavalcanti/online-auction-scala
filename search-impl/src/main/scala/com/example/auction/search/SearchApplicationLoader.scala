@@ -11,7 +11,7 @@ import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.server.status.MetricsServiceComponents
 import com.lightbend.lagom.scaladsl.server.{ LagomApplication, LagomApplicationContext, LagomApplicationLoader }
 import com.softwaremill.macwire._
-import com.lightbend.rp.servicediscovery.lagom.scaladsl.LagomServiceLocatorComponents
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 
 abstract class SearchApplication(context: LagomApplicationContext) extends LagomApplication(context)
@@ -34,7 +34,7 @@ abstract class SearchApplication(context: LagomApplicationContext) extends Lagom
 
 class SearchApplicationLoader extends LagomApplicationLoader {
   override def load(context: LagomApplicationContext) =
-    new SearchApplication(context) with LagomServiceLocatorComponents
+    new SearchApplication(context) with AkkaDiscoveryComponents
 
   override def loadDevMode(context: LagomApplicationContext) =
     new SearchApplication(context) with LagomDevModeComponents

@@ -19,7 +19,8 @@ val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.1" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % Test
 val scalaTestPlusPlay = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 val mockito = "org.mockito" % "mockito-core" % "2.22.0" % Test
-
+val akkaServiceLocator = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % "0.0.12"
+val akkaDiscoveryK8s = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0-RC2"
 
 lazy val security = (project in file("security"))
   .settings(commonSettings: _*)
@@ -44,13 +45,15 @@ lazy val itemApi = (project in file("item-api"))
 
 lazy val itemImpl = (project in file("item-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala)
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
       lagomScaladslTestKit,
       lagomScaladslKafkaBroker,
       "com.datastax.cassandra" % "cassandra-driver-extras" % "3.0.0",
+      akkaServiceLocator,
+      akkaDiscoveryK8s,
       macwire,
       scalaTest
     )
@@ -70,13 +73,15 @@ lazy val biddingApi = (project in file("bidding-api"))
 
 lazy val biddingImpl = (project in file("bidding-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala)
   .dependsOn(biddingApi, itemApi)
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
       lagomScaladslTestKit,
       lagomScaladslKafkaBroker,
+      akkaServiceLocator,
+      akkaDiscoveryK8s,
       macwire,
       scalaTest
     ),
@@ -96,13 +101,15 @@ lazy val searchApi = (project in file("search-api"))
 
 lazy val searchImpl = (project in file("search-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala)
   .dependsOn(searchApi, itemApi, biddingApi)
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
       lagomScaladslKafkaClient,
       lagomScaladslTestKit,
+      akkaServiceLocator,
+      akkaDiscoveryK8s,
       macwire,
       scalaTest
     )
@@ -128,6 +135,8 @@ lazy val transactionImpl = (project in file("transaction-impl"))
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
       lagomScaladslTestKit,
+      akkaServiceLocator,
+      akkaDiscoveryK8s,
       macwire,
       scalaTest
     ),
@@ -146,11 +155,13 @@ lazy val userApi = (project in file("user-api"))
 
 lazy val userImpl = (project in file("user-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala)
   .dependsOn(userApi)
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
+      akkaServiceLocator,
+      akkaDiscoveryK8s,
       macwire,
       scalaTest
     )
@@ -158,7 +169,7 @@ lazy val userImpl = (project in file("user-impl"))
 
 lazy val webGateway = (project in file("web-gateway"))
   .settings(commonSettings: _*)
-  .enablePlugins(PlayScala, LagomPlay, SbtReactiveAppPlugin)
+  .enablePlugins(PlayScala, LagomPlay)
   .dependsOn(biddingApi, itemApi, userApi)
   .settings(
     libraryDependencies ++= Seq(
@@ -166,6 +177,7 @@ lazy val webGateway = (project in file("web-gateway"))
       macwire,
       scalaTest,
       scalaTestPlusPlay,
+      akkaServiceLocator,
       mockito,
 
       "org.ocpsoft.prettytime" % "prettytime" % "3.2.7.Final",
@@ -173,8 +185,7 @@ lazy val webGateway = (project in file("web-gateway"))
       "org.webjars" % "foundation" % "6.2.3",
       "org.webjars" % "foundation-icon-fonts" % "d596a3cfb3"
     ),
-    EclipseKeys.preTasks := Seq(compile in Compile),
-    rpHttpIngressPaths := Seq("/")
+    EclipseKeys.preTasks := Seq(compile in Compile)
   )
 
 def commonSettings: Seq[Setting[_]] = Seq(

@@ -7,7 +7,7 @@ import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceComponents
 import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
-import com.lightbend.rp.servicediscovery.lagom.scaladsl.LagomServiceLocatorComponents
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 
 abstract class BiddingApplication(context: LagomApplicationContext) extends LagomApplication(context)
@@ -28,7 +28,7 @@ abstract class BiddingApplication(context: LagomApplicationContext) extends Lago
 
 class BiddingApplicationLoader extends LagomApplicationLoader {
   override def load(context: LagomApplicationContext) =
-    new BiddingApplication(context) with LagomServiceLocatorComponents
+    new BiddingApplication(context) with AkkaDiscoveryComponents
 
   override def loadDevMode(context: LagomApplicationContext) =
     new BiddingApplication(context) with LagomDevModeComponents

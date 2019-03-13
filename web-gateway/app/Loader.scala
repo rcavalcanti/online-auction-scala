@@ -6,7 +6,7 @@ import com.example.auction.user.api.UserService
 import com.lightbend.lagom.scaladsl.api.{LagomConfigComponent, ServiceAcl, ServiceInfo}
 import com.lightbend.lagom.scaladsl.client.LagomServiceClientComponents
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
-import com.lightbend.rp.servicediscovery.lagom.scaladsl.LagomServiceLocatorComponents
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import com.softwaremill.macwire._
 import controllers.{AssetsComponents, ItemController, Main, ProfileController}
 import play.api.ApplicationLoader.Context
@@ -52,6 +52,6 @@ class WebGatewayLoader extends ApplicationLoader {
     case Mode.Dev =>
       (new WebGateway(context) with LagomDevModeComponents).application
     case _ =>
-      (new WebGateway(context) with LagomServiceLocatorComponents).application
+      (new WebGateway(context) with AkkaDiscoveryComponents).application
   }
 }

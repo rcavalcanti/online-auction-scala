@@ -8,7 +8,7 @@ import akka.NotUsed
 import com.example.auction.item.api.{Item, ItemService, ItemStatus}
 import com.example.auction.user.api.{User, UserService}
 import com.lightbend.lagom.scaladsl.api.ServiceCall
-import com.lightbend.rp.servicediscovery.lagom.scaladsl.LagomServiceLocatorComponents
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import org.mockito.Mockito
 import org.scalatestplus.play.{BaseOneAppPerTest, FakeApplicationFactory, PlaySpec}
 import play.api.test.Helpers._
@@ -70,7 +70,7 @@ trait LagomFakeApplicationFactory extends FakeApplicationFactory {
     val environment = Environment.simple()
     val context = ApplicationLoader.createContext(environment)
 
-    new loader.WebGateway(context) with LagomServiceLocatorComponents {
+    new loader.WebGateway(context) with AkkaDiscoveryComponents {
 
       // Mock UserService
       override lazy val userService: UserService = {

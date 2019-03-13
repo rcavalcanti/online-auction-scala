@@ -26,39 +26,12 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: "JAVA_OPTS"
-              value: "-Dplay.http.secret.key=659987c499b5c81688abff1dfffc21c6-be47183810f74972134ee87a1816b2f6 -Dplay.filters.hosts.allowed.0=192.168.99.100"
-            - name: "RP_APP_NAME"
-              value: webGateway
-            - name: "RP_APP_TYPE"
-              value: lagom
-            - name: "RP_APP_VERSION"
-              value: "1.0.0-SNAPSHOT"
-            - name: "RP_JAVA_OPTS"
-              value: "-Dplay.server.pidfile.path=/dev/null -Dconfig.resource=rp-application.conf"
-            - name: "RP_KUBERNETES_POD_IP"
-              valueFrom:
-                fieldRef:
-                  fieldPath: "status.podIP"
-            - name: "RP_KUBERNETES_POD_NAME"
-              valueFrom:
-                fieldRef:
-                  fieldPath: "metadata.name"
-            - name: "RP_MODULES"
-              value: "common,service-discovery"
-            - name: "RP_NAMESPACE"
-              valueFrom:
-                fieldRef:
-                  fieldPath: "metadata.namespace"
-            - name: "RP_PLATFORM"
-              value: kubernetes
+              value: "-Dplay.server.pidfile.path=/dev/null -Dconfig.resource=rp-application.conf -Dplay.http.secret.key=659987c499b5c81688abff1dfffc21c6-be47183810f74972134ee87a1816b2f6 -Dplay.filters.hosts.allowed.0=192.168.99.100"
+
           ports:
             - containerPort: 9000
               name: http
           volumeMounts: []
-          command:
-            - "/opt/docker/bin/rp-start"
-          args:
-            - "bin/webgateway"
       volumes: []
 ---
 apiVersion: v1
