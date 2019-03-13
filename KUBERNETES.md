@@ -1,8 +1,6 @@
 ## Running: Kubernetes
 
-This project uses [Lightbend Orchestration for Kubernetes](https://developer.lightbend.com/docs/lightbend-orchestration-kubernetes/latest/) to
-simplify deployment of Online Auction to [Kubernetes](https://kubernetes.io/). Follow the steps below to install Online Auction in your
-own local Kubernetes environment.
+This project uses [Lightbend Orchestration for Kubernetes](https://developer.lightbend.com/docs/lightbend-orchestration-kubernetes/latest/) to simplify deployment of Online Auction to [Kubernetes](https://kubernetes.io/). Follow the steps below to install Online Auction in your own local Kubernetes environment.
 
 ## Setup
 

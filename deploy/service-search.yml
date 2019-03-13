@@ -1,0 +1,102 @@
+---
+apiVersion: "apps/v1beta2"
+kind: Deployment
+metadata:
+  name: "search-v1-0-0-snapshot"
+  labels:
+    app: search
+    appNameVersion: "search-v1-0-0-snapshot"
+    "akka.lightbend.com/service-name": search
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      appNameVersion: "search-v1-0-0-snapshot"
+  template:
+    metadata:
+      labels:
+        app: search
+        appNameVersion: "search-v1-0-0-snapshot"
+        "akka.lightbend.com/service-name": search
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: search
+          image: "searchimpl:1.0.0-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "JAVA_OPTS"
+              value: "-Dplay.http.secret.key=659987c499b5c81688abff1dfffc21c6-be47183810f74972134ee87a1816b2f6 -Dplay.filters.hosts.allowed.0=192.168.99.100"
+            - name: "RP_APP_NAME"
+              value: search
+            - name: "RP_APP_TYPE"
+              value: lagom
+            - name: "RP_APP_VERSION"
+              value: "1.0.0-SNAPSHOT"
+            - name: "RP_DYN_JAVA_OPTS"
+              value: "-Dakka.discovery.kubernetes-api.pod-namespace=$RP_NAMESPACE"
+            - name: "RP_JAVA_OPTS"
+              value: "-Dplay.server.pidfile.path=/dev/null -Dconfig.resource=rp-application.conf -Dakka.management.cluster.bootstrap.contact-point-discovery.discovery-method=kubernetes-api -Dakka.management.cluster.bootstrap.contact-point-discovery.port-name=management -Dakka.management.cluster.bootstrap.contact-point-discovery.effective-name=search -Dakka.discovery.kubernetes-api.pod-label-selector=akka.lightbend.com/service-name=%s -Dakka.management.cluster.bootstrap.contact-point-discovery.required-contact-point-nr=2 -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.cas_native.0=_cql._tcp.reactive-sandbox-cassandra.default.svc.cluster.local -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.kafka_native.0=_broker._tcp.reactive-sandbox-kafka.default.svc.cluster.local -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.elastic-search.0=_http._tcp.reactive-sandbox-elasticsearch.default.svc.cluster.local"
+            - name: "RP_KUBERNETES_POD_IP"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_KUBERNETES_POD_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.name"
+            - name: "RP_MODULES"
+              value: "akka-cluster-bootstrapping,akka-management,common,service-discovery,status"
+            - name: "RP_NAMESPACE"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.namespace"
+            - name: "RP_PLATFORM"
+              value: kubernetes
+          ports:
+            - containerPort: 9000
+              name: http
+            - containerPort: 2552
+              name: remoting
+            - containerPort: 8558
+              name: management
+          volumeMounts: []
+          command:
+            - "/opt/docker/bin/rp-start"
+          args:
+            - "bin/searchimpl"
+          readinessProbe:
+            httpGet:
+              path: "/platform-tooling/ready"
+              port: management
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: "/platform-tooling/healthy"
+              port: management
+            periodSeconds: 10
+            initialDelaySeconds: 60
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: search
+  name: search
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+    - name: remoting
+      port: 2552
+      protocol: TCP
+      targetPort: 2552
+    - name: management
+      port: 8558
+      protocol: TCP
+      targetPort: 8558
+  selector:
+    app: search

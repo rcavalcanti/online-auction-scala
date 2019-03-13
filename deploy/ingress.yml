@@ -1,0 +1,17 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: Ingress
+metadata:
+  name: "online-auction"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: "/api/search"
+            backend:
+              serviceName: search
+              servicePort: 9000
+          - path: "/"
+            backend:
+              serviceName: webgateway
+              servicePort: 9000
